@@ -28,4 +28,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-bot.run('MTE1MjI4MDc2NDM1MjgzMTU3MA.GSyAlb.ZUHAnh3xs7iWt4teSOzleXf275eO6ref0e7ckA')
+token = open("./token.txt")
+
+bot.run(token.read())
