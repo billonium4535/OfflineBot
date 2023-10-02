@@ -1,6 +1,15 @@
 import discord
 from discord.ext import commands
 
+deletedMessagesFile = "./deletedMessages.txt"
+
+try:
+    with open(deletedMessagesFile, "r"):
+        pass
+except FileNotFoundError:
+    with open(deletedMessagesFile, "w"):
+        pass
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -23,12 +32,16 @@ async def on_message(message):
     if isinstance(message.channel, discord.TextChannel):
         member = message.guild.get_member(message.author.id)
         if member and member.status == discord.Status.offline:
-            await message.delete()
+            with open(deletedMessagesFile, "a") as f:
+                f.write(f"Message: {message.content}, Author: {message.author}, Channel: {message.channel}\n")
+            try:
+                await message.delete()
+            except discord.errors.NotFound:
+                pass
             await message.channel.send(f"{member.mention}, you cannot send messages while offline.")
 
     await bot.process_commands(message)
 
 
 token = open("./token.txt")
-
 bot.run(token.read())
