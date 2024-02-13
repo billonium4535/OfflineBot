@@ -19,7 +19,7 @@ intents.message_content = True
 intents.members = True
 intents.presences = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="ol!", intents=intents)
 
 last_member = []
 
@@ -44,18 +44,14 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if message.content.lower() == "!StartOfflineBot":
+    if message.content.lower() == "!startofflinebot" and not active:
         active = True
-    elif message.content.lower() == "!StopOfflineBot":
+        await message.channel.send("Started offline bot")
+    elif message.content.lower() == "!stopofflinebot" and active:
         active = False
+        await message.channel.send("Stopped offline bot")
 
-    if message.content == "timeout":
-        print(message.author)
-        if message.author.id == 296371822381891586:
-            member = message.guild.get_member(364476443578728459)
-            await member.timeout(timedelta(days=28), reason="fuck you")
-
-    if isinstance(message.channel, discord.TextChannel):
+    if isinstance(message.channel, discord.TextChannel) and active:
         member = message.guild.get_member(message.author.id)
         if member and member.status == discord.Status.offline:
             with open(deletedMessagesFile, "a") as f:
@@ -70,7 +66,9 @@ async def on_message(message):
             bot.loop.create_task(remove_member_id(member.id))
             if last_member.count(member.id) >= 5:
                 try:
-                    last_member.remove(member.id)
+                    for list_member in last_member:
+                        if list_member == member.id:
+                            last_member.remove(member.id)
                     await member.timeout(timedelta(seconds=30), reason="you were warned")
                     await message.channel.send(f"{member.mention} I FUCKIN WARNED YOU")
                     with open(deletedMessagesFile, "a") as f:
@@ -89,5 +87,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-token = open("./token.txt")
+current_directory = os.path.dirname(__file__)
+file_path = os.path.join(current_directory, "token.txt")
+token = open(file_path)
 bot.run(token.read())
