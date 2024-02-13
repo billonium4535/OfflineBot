@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 deletedMessagesFile = "./deletedMessages.txt"
+active = True
 
 try:
     with open(deletedMessagesFile, "r"):
@@ -26,19 +27,27 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    global active
     if message.author.bot:
         return
 
-    if isinstance(message.channel, discord.TextChannel):
+    if message.content.lower() == "!StartOfflineBot":
+        active = True
+    elif message.content.lower() == "!StopOfflineBot":
+        active = False
+
+    if isinstance(message.channel, discord.TextChannel) and active:
         member = message.guild.get_member(message.author.id)
         if member and member.status == discord.Status.offline:
             with open(deletedMessagesFile, "a") as f:
                 f.write(f"Message: {message.content}, Author: {message.author}, Channel: {message.channel}\n")
-            try:
-                await message.delete()
-            except discord.errors.NotFound:
-                pass
-            await message.channel.send(f"{member.mention}, you cannot send messages while offline.")
+            # Commented out to not delete messages from users
+            # try:
+            #     await message.delete()
+            # except discord.errors.NotFound:
+            #     pass
+            # await message.channel.send(f"{member.mention}, you cannot send messages while offline.")
+            await message.channel.send(f"{member.mention} has sent a message while offline.")
 
     await bot.process_commands(message)
 
