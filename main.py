@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 deletedMessagesFile = "./deletedMessages.txt"
+active = True
 
 try:
     with open(deletedMessagesFile, "r"):
@@ -26,10 +27,16 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    global active
     if message.author.bot:
         return
 
-    if isinstance(message.channel, discord.TextChannel):
+    if message.content.lower() == "!StartOfflineBot":
+        active = True
+    elif message.content.lower() == "!StopOfflineBot":
+        active = False
+
+    if isinstance(message.channel, discord.TextChannel) and active:
         member = message.guild.get_member(message.author.id)
         if member and member.status == discord.Status.offline:
             with open(deletedMessagesFile, "a") as f:
