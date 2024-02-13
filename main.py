@@ -4,7 +4,9 @@ import discord
 from discord.ext import commands
 import os
 
-deletedMessagesFile = "./deletedMessages.txt"
+local_current_directory = os.path.dirname(__file__)
+local_file_path = os.path.join(local_current_directory, "deletedMessages.txt")
+deletedMessagesFile = local_file_path
 active = True
 
 try:
