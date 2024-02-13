@@ -34,11 +34,13 @@ async def on_message(message):
         if member and member.status == discord.Status.offline:
             with open(deletedMessagesFile, "a") as f:
                 f.write(f"Message: {message.content}, Author: {message.author}, Channel: {message.channel}\n")
-            try:
-                await message.delete()
-            except discord.errors.NotFound:
-                pass
-            await message.channel.send(f"{member.mention}, you cannot send messages while offline.")
+            # Commented out to not delete messages from users
+            # try:
+            #     await message.delete()
+            # except discord.errors.NotFound:
+            #     pass
+            # await message.channel.send(f"{member.mention}, you cannot send messages while offline.")
+            await message.channel.send(f"{member.mention} has sent a message while offline.")
 
     await bot.process_commands(message)
 
