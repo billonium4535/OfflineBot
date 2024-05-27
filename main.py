@@ -3,6 +3,7 @@ from datetime import timedelta
 import discord
 from discord.ext import commands
 import os
+import requests
 
 local_current_directory = os.path.dirname(__file__)
 local_file_path = os.path.join(local_current_directory, "deletedMessages.txt")
@@ -42,6 +43,19 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    # Change profile picture
+    user = await bot.fetch_user(364476443578728459)
+    avatar_url = str(user.avatar.url)
+    response = requests.get(avatar_url)
+    if response.status_code == 200:
+        with open("./icon.png", "wb") as file:
+            file.write(response.content)
+            file.close()
+        with open("./icon.png", "rb") as file:
+            icon_data = file.read()
+            file.close()
+        await bot.user.edit(avatar=icon_data)
+
     global active
     if message.author.bot:
         return
