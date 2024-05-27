@@ -24,7 +24,7 @@ pip install discord.py
 1. Run the bot:
 
 ```bash
-python bot.py
+python main.py
 ```
 
 2. Invite the bot to your Discord server and grant necessary permissions.
